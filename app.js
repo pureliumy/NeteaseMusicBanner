@@ -12,18 +12,17 @@ let timer = setInterval(saveJson, 1000 * 60 * 10)
 function saveJson () {
   superagent.get('http://music.163.com/discover')
     .end((err, res) => {
-      if (err) {
+      if (!err) {
+        const item = cheerio.load(res.text)('#g_backtop+script').html()
+        const index = item.indexOf('[')
+        const lastIndex = item.lastIndexOf(';')
+        const tempString = item.substring(index, lastIndex)
+        var jsonString = '{code:' + res.status + ',result:' + tempString + '}'
+      } else {
         console.log(err)
-        this.saveJson()
+        var jsonString = '{code:' + res.status + '}'
       }
-      const $ = cheerio.load(res.text)
-      const item = $('#g_backtop+script').html()
-      const index = item.indexOf('[')
-      const lastIndex = item.lastIndexOf(';')
-      const tempString = item.substring(index, lastIndex)
-      const jsonString = '{code:' + res.status + ',result:' + tempString + '}'
       const jsonData = eval('(' + jsonString + ')')
-
       fs.writeFile(jsonPath, JSON.stringify(jsonData, null, 2), (err) => {
         if (err) console.log(err)
         console.log('json have been saved to', jsonPath)
@@ -37,4 +36,4 @@ app.get('/', (req, res) => {
 })
 
 app.listen(3001)
-console.log('app is listen at 3000')
+console.log('app is listen at 3001')
