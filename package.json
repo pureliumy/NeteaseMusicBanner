@@ -1,0 +1,24 @@
+{
+  "name": "netease-music-banner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pureliumy/NeteaseMusicBanner.git"
+  },
+  "author": "pureliumy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pureliumy/NeteaseMusicBanner/issues"
+  },
+  "homepage": "https://github.com/pureliumy/NeteaseMusicBanner#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.15.4",
+    "superagent": "^3.6.0"
+  }
+}
