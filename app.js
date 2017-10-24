@@ -6,8 +6,17 @@ const fs = require('fs')
 const app = new Express()
 const jsonPath = './banners.json'
 
+// How long to update the data, unit ms.
+const frequency = 1000 * 60 * 10
+
+// How long to re-request if there is an error, unit ms.
+const interval = 1000
+
 start()
-let timer = setInterval(start, 1000 * 60 * 10)
+
+let timer = setInterval(start, frequency)
+
+// status of API server to music.163.com
 let status
 
 function start () {
@@ -16,7 +25,7 @@ function start () {
       status = res.status
       if (err && !res.ok) {
         console.log(err)
-        setTimeout(start(), 1000)
+        setTimeout(start(), interval)
       } else {
         const tempString = extract(res)
         const jsonData = parse(res.status, tempString)
