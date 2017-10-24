@@ -12,27 +12,39 @@ let timer = setInterval(saveJson, 1000 * 60 * 10)
 function saveJson () {
   superagent.get('http://music.163.com/discover')
     .end((err, res) => {
-      if (!err) {
-        const item = cheerio.load(res.text)('#g_backtop+script').html()
-        const index = item.indexOf('[')
-        const lastIndex = item.lastIndexOf(';')
-        const tempString = item.substring(index, lastIndex)
-        var jsonString = '{code:' + res.status + ',result:' + tempString + '}'
+      if (err && !res.ok) {
+        saveJson()
       } else {
-        console.log(err)
-        var jsonString = '{code:' + res.status + '}'
+        const data = parse(res)
+        write(data)
       }
-      const jsonData = eval('(' + jsonString + ')')
-      fs.writeFile(jsonPath, JSON.stringify(jsonData, null, 2), (err) => {
-        if (err) console.log(err)
-        console.log('json have been saved to', jsonPath)
-      })
     })
 }
 
+function parse (res) {
+  const item = cheerio.load(res.text)('#g_backtop+script').html()
+  const index = item.indexOf('[')
+  const lastIndex = item.lastIndexOf(';')
+  const tempString = item.substring(index, lastIndex)
+  const jsonString = '{parseCode:' + res.status + ',result:' + tempString + '}'
+  const jsonData = eval('(' + jsonString + ')')
+  const data = JSON.stringify(jsonData, null, 2)
+  return data
+}
+
+function write (data) {
+  fs.writeFile(jsonPath, data, (err) => {
+    if (err) {
+      console.log(err)
+    }
+    const time = new Date()
+    console.log('json data has been saved to', jsonPath)
+  })
+}
+
 app.get('/', (req, res) => {
-  const jsonData = fs.readFileSync(jsonPath)
-  res.jsonp(JSON.parse(jsonData))
+  const jsonData = JSON.parse(fs.readFileSync(jsonPath))
+  res.jsonp(jsonData)
 })
 
 app.listen(3001)
